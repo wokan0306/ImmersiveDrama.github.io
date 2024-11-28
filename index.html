@@ -25,15 +25,28 @@
         const videoPlayer = document.getElementById('videoPlayer');
         let currentIndex = -1; // Start with -1 to indicate no video has been loaded
         const totalVideos = 6; // Adjust this number based on the total number of videos in the resource folder
+        const videoSources = [];
+
+        // Preload all videos
+        function preloadVideos() {
+            for (let i = 0; i < totalVideos; i++) {
+                const video = document.createElement('video');
+                video.src = `resource/scene_${i + 1}.mp4`;
+                video.load(); // Load the video to cache it
+                videoSources.push(video);
+            }
+        }
 
         function loadVideo(index) {
-            videoPlayer.src = `resource/scene_${index + 1}.mp4`;
-            videoPlayer.style.display = 'block'; // Show the video element
-            videoPlayer.play().then(() => {
-                videoPlayer.requestFullscreen();
-            }).catch(error => {
-                console.error('Error attempting to play video:', error);
-            });
+            if (videoSources[index]) {
+                videoPlayer.src = videoSources[index].src;
+                videoPlayer.style.display = 'block'; // Show the video element
+                videoPlayer.play().then(() => {
+                    videoPlayer.requestFullscreen();
+                }).catch(error => {
+                    console.error('Error attempting to play video:', error);
+                });
+            }
         }
 
         videoPlayer.addEventListener('ended', () => {
@@ -60,6 +73,9 @@
                 loadVideo(currentIndex);
             }
         });
+
+        // Start preloading videos
+        preloadVideos();
     </script>
 </body>
 </html>
