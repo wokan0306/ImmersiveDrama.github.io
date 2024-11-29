@@ -21,11 +21,14 @@
 </head>
 <body>
     <video id="videoPlayer" muted></video>
+    <audio id="audioPlayer" muted></audio>
     <script>
         const videoPlayer = document.getElementById('videoPlayer');
+        const audioPlayer = document.getElementById('audioPlayer');
         let currentIndex = -1; // Start with -1 to indicate no video has been loaded
         const totalVideos = 6; // Adjust this number based on the total number of videos in the resource folder
         const videoSources = [];
+        const audioSources = [];
 
         // Preload all videos
         function preloadVideos() {
@@ -49,6 +52,29 @@
             }
         }
 
+        function preloadAudios() {
+            const audio_1 = document.createElement('audio');
+            audio_1.src = 'resource/clip_1.mp3';
+            audio_1.type = "audio/mpeg";
+            audio_1.load();
+            audioSources.push(audio_1);
+            const audio_2 = document.createElement('audio');
+            audio_2.src = 'resource/clip_2.mp3';
+            audio_2.type = "audio/mpeg";
+            audio_2.load();
+            audioSources.push(audio_2);
+        }
+
+        function playAudio(index) {
+            if (index == 0 | index == 5) {
+                audioPlayer.src = audioSources[Math.floor(index / 5)].src;
+                audioPlayer.muted = false;
+                audioPlayer.play().catch(error => {
+                    console.error('Error playing audio:', error);
+                });
+            }
+        }
+
         videoPlayer.addEventListener('ended', () => {
             videoPlayer.currentTime = 0; // Reset to the beginning
             videoPlayer.play(); // Replay the video
@@ -59,9 +85,11 @@
                 if (currentIndex === -1) {
                     currentIndex = 0; // Load the first video on the first click
                     loadVideo(currentIndex);
+                    playAudio(currentIndex);
                 } else if (currentIndex < totalVideos - 1) {
                     currentIndex++;
                     loadVideo(currentIndex);
+                    playAudio(currentIndex);
                 }
             }
         });
@@ -71,11 +99,13 @@
             if (currentIndex > 0) {
                 currentIndex--;
                 loadVideo(currentIndex);
+                playAudio(currentIndex);
             }
         });
 
         // Start preloading videos
         preloadVideos();
+        preloadAudios();
     </script>
 </body>
 </html>
